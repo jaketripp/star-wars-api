@@ -10,7 +10,7 @@ app.get('/people/:id', (req, res) => {
   axios
     .get(`https://swapi.co/api/people/${id}`)
     .then(response => {
-      res.send(JSON.stringify(response.data));
+      res.send(response.data);
     })
     .catch(error => {
       console.log(error);
@@ -24,7 +24,7 @@ app.get('/people', (req, res) => {
   axios
     .get(`https://swapi.co/api/people`)
     .then(response => {
-      res.send(JSON.stringify(response.data));
+      res.send(response.data);
     })
     .catch(error => {
       console.log(error);
@@ -39,7 +39,7 @@ app.get('/planets/:id', (req, res) => {
   axios
     .get(`https://swapi.co/api/planets/${id}`)
     .then(response => {
-      res.send(JSON.stringify(response.data));
+      res.send(response.data);
     })
     .catch(error => {
       console.log(error);
@@ -93,7 +93,7 @@ app.get('/planets', (req, res) => {
   axios
     .get(`https://swapi.co/api/planets`)
     .then(response => {
-      res.send(JSON.stringify(response.data));
+      res.send(response.data);
     })
     .catch(error => {
       console.log(error);
