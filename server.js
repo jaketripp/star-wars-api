@@ -1,5 +1,4 @@
 const express = require('express');
-const request = require('request');
 const axios = require('axios');
 
 const port = process.env.PORT || 3000;
@@ -56,7 +55,7 @@ app.get('/planets/:id/residents', (req, res) => {
   axios
     .get(`https://swapi.co/api/planets/${id}`)
     .then(({ data }) => {
-      
+
       let modifiedData = data;
       let promises = [];
 
