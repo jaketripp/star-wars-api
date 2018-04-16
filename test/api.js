@@ -11,9 +11,6 @@ describe("api endpoints", function () {
         .get(`${baseUrl}/people/1`)
         .then(({ data }) => {
           expect(data.name).to.be.equal("Luke Skywalker");
-        })
-        .catch(error => {
-          throw new Error('ERROR: Unable to fetch data.');
         });
     });
     it('should be able to fetch the first 10 people', function () {
@@ -24,10 +21,28 @@ describe("api endpoints", function () {
             return person.name;
           });
           expect(people).to.be.an('array').that.includes('C-3PO');
-        })
-        .catch(error => {
-          throw new Error('ERROR: Unable to fetch data.');
         });
     });
   });
+
+  describe("planets", function () {
+    it('should be able to fetch planet #1', function () {
+      axios
+        .get(`${baseUrl}/planets/1`)
+        .then(({ data }) => {
+          expect(data.name === "Tatooine").to.be.true;
+        });
+    });
+
+    it('should be able to fetch the first 10 planets', function () {
+      axios
+        .get(`${baseUrl}/planets`)
+        .then(({ data }) => {
+          var planets = data.results.map((planet) => {
+            return planet.name;
+          });
+          expect(planets).to.be.an('array').that.includes("Hoth");
+        });
+    });
+  })
 });
