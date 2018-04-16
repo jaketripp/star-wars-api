@@ -1,0 +1,29 @@
+/people/:someID 	An endpoint that returns all data about 1 person.
+should just return the basic info for that individual.
+https://swapi.co/api/people/3
+
+
+/people  					An endpoint that returns data about ALL people in the API.
+People must be sortable by ['name', 'mass', 'height']
+
+
+
+/planets/:someID  An endpoint that returns all data about 1 planet. (Residents)
+should just return the basic info for that individual.
+
+The endpoint that returns a single planet should also have an optional endpoint to return the basic planet information with the names of all the residents instead of the default from SWAPI which is links to each person.
+
+
+
+/planets 					An endpoint that returns data about ALL planets in the API.
+planets must be sortable by ['name', 'population', 'diameter'].
+
+When making calls to fetch people and planets, although you could fetch the entire list at once, limit each response to 10, so you can demonstrate that you understand how to use their API and pagination to get all of the data. Your response should still be an array of ALL the objects from the SWAPI API.
+
+People must be sortable by ['name', 'mass', 'height'], planets must be sortable by ['name', 'population', 'diameter'].
+
+
+
+Sorting
+Pagination
+
