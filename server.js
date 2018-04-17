@@ -24,28 +24,21 @@ app.get("/people", (req, res) => {
   axios
     .get(`https://swapi.co/api/people`)
     .then(({ data }) => {
+      let { sort, reverseOrder } = req.query;
       let isReversed;
       if (reverseOrder) {
         isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
       }
-      res.send(sortByProperty(data, sort, isReversed));
+
+      getData("https://swapi.co/api/people", []).then(people => {
+        let sortedPeople = sortByProperty(people, sort, isReversed);
+        res.send(sortedPeople);
+      });
     })
     .catch(error => {
       console.log(error);
       res.send("ERROR: Unable to fetch data.");
     });
-});
-
-// all planets
-app.get("/planets-test", (req, res) => {
-  let { sort, reverseOrder } = req.query;
-  getData("https://swapi.co/api/planets", []).then(planets => {
-    let isReversed;
-    if (reverseOrder) {
-      isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
-    }
-    res.send(sortByProperty(planets, sort, isReversed));
-  });
 });
 
 // specific planet
@@ -104,19 +97,15 @@ app.get("/planets/:id/residents", (req, res) => {
 // all planets
 app.get("/planets", (req, res) => {
   let { sort, reverseOrder } = req.query;
-  axios
-    .get(`https://swapi.co/api/planets`)
-    .then(({ data }) => {
-      let isReversed;
-      if (reverseOrder) {
-        isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
-      }
-      res.send(sortByProperty(data, sort, isReversed));
-    })
-    .catch(error => {
-      console.log(error);
-      res.send("ERROR: Unable to fetch data.");
-    });
+  let isReversed;
+  if (reverseOrder) {
+    isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
+  }
+  
+  getData("https://swapi.co/api/planets", []).then(planets => {
+    let sortedPlanets = sortByProperty(planets, sort, isReversed);
+    res.send(sortedPlanets);
+  });
 });
 
 app.listen(port, () => {
