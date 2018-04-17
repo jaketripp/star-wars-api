@@ -18,14 +18,12 @@ The endpoint that returns a single planet should also have an optional endpoint 
 /planets 					An endpoint that returns data about ALL planets in the API.
 planets must be sortable by ['name', 'population', 'diameter'].
 
-When making calls to fetch people and planets, although you could fetch the entire list at once, limit each response to 10, so you can demonstrate that you understand how to use their API and pagination to get all of the data. Your response should still be an array of ALL the objects from the SWAPI API.
-
 People must be sortable by ['name', 'mass', 'height'], planets must be sortable by ['name', 'population', 'diameter'].
 
 
 
-Sorting
 Pagination
 
 WHAT DO YOU MEAN PAGINATION? It's already 10 elements by default for the planets and people endpoints, then you can do ?page=2
 
+When making calls to fetch people and planets, although you could fetch the entire list at once, limit each response to 10, so you can demonstrate that you understand how to use their API and pagination to get all of the data. Your response should still be an array of ALL the objects from the SWAPI API.
