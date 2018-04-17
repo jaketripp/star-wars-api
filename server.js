@@ -20,11 +20,15 @@ app.get("/people/:id", (req, res) => {
 
 // all people
 app.get("/people", (req, res) => {
-  let { sort, sortReverse } = req.query;
+  let { sort, reverseOrder } = req.query;
   axios
     .get(`https://swapi.co/api/people`)
     .then(({ data }) => {
-      res.send(sortByProperty(data, sort));
+      let isReversed;
+      if (reverseOrder) {
+        isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
+      }
+      res.send(sortByProperty(data, sort, isReversed));
     })
     .catch(error => {
       console.log(error);
@@ -54,7 +58,7 @@ app.get("/planets/:id/residents", (req, res) => {
   axios
     .get(`https://swapi.co/api/planets/${id}`)
     .then(({ data }) => {
-      let modifiedData = data;
+      let dataWithResidentNames = data;
       let promises = [];
 
       // loop through residents and populate promises array
@@ -74,8 +78,8 @@ app.get("/planets/:id/residents", (req, res) => {
             return resident.data.name;
           });
 
-          modifiedData.residents = residentNames;
-          res.send(modifiedData);
+          dataWithResidentNames.residents = residentNames;
+          res.send(dataWithResidentNames);
         })
       );
     })
@@ -87,11 +91,15 @@ app.get("/planets/:id/residents", (req, res) => {
 
 // all planets
 app.get("/planets", (req, res) => {
-  let { sort, sortReverse } = req.query;
+  let { sort, reverseOrder } = req.query;
   axios
     .get(`https://swapi.co/api/planets`)
     .then(({ data }) => {
-      res.send(sortByProperty(data, sort));
+      let isReversed;
+      if (reverseOrder) {
+        isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
+      }
+      res.send(sortByProperty(data, sort, isReversed));
     })
     .catch(error => {
       console.log(error);
@@ -107,9 +115,12 @@ app.listen(port, () => {
 // response.data
 // property by which to sort
 // returns response.data with response.data.results sorted correctly
-// handle sortReverse here if necessary
-function sortByProperty(data, property) {
-  data.results = data.results.sort(byProperty(property));
+function sortByProperty(data, property, isReversed) {
+  if (isReversed) {
+    data.results = data.results.sort(byProperty(property)).reverse();
+  } else {
+    data.results = data.results.sort(byProperty(property));
+  }
   return data;
 }
 
@@ -126,7 +137,7 @@ function byProperty(property) {
         return 0;
       }
 
-      // height, mass => needs to be converted to a Number
+      // height, mass => need to be converted to a Number
     } else {
       if (Number(a[property]) < Number(b[property])) {
         return -1;
