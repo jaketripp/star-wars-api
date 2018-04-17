@@ -27,3 +27,5 @@ People must be sortable by ['name', 'mass', 'height'], planets must be sortable 
 Sorting
 Pagination
 
+WHAT DO YOU MEAN PAGINATION? It's already 10 elements by default for the planets and people endpoints, then you can do ?page=2
+
