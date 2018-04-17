@@ -11,8 +11,10 @@ describe("api endpoints", function () {
         .get(`${baseUrl}/people/1`)
         .then(({ data }) => {
           expect(data.name).to.be.equal("Luke Skywalker");
+          expect(data.name).to.not.equal("Star Wars");
         });
     });
+    
     it('should be able to fetch the first 10 people', function () {
       axios
         .get(`${baseUrl}/people`)
@@ -21,6 +23,7 @@ describe("api endpoints", function () {
             return person.name;
           });
           expect(people).to.be.an('array').that.includes('C-3PO');
+          expect(people).to.be.an('array').that.does.not.include('C-3POzzz');
         });
     });
   });
@@ -30,7 +33,8 @@ describe("api endpoints", function () {
       axios
         .get(`${baseUrl}/planets/1`)
         .then(({ data }) => {
-          expect(data.name === "Tatooine").to.be.true;
+          expect(data.name).to.be.equal("Tatooine");
+          expect(data.name).to.not.equal("Star Wars");
         });
     });
 
@@ -42,6 +46,7 @@ describe("api endpoints", function () {
             return planet.name;
           });
           expect(planets).to.be.an('array').that.includes("Hoth");
+          expect(planets).to.be.an('array').that.does.not.include("Hoath");
         });
     });
   })
