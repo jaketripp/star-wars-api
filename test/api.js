@@ -145,8 +145,20 @@ describe("api endpoints", function() {
         });
     });
 
-    it("should be able to fetch planet #1 and show resident names instead of URLs", function() {
+    it("should be able to fetch planet #2 and show resident names instead of URLs", function() {
       let residents = ["Leia Organa", "Bail Prestor Organa", "Raymus Antilles"];
+      return axios
+        .get(`${baseUrl}/planets/2/residents`)
+        .then(response => {
+          let { data } = response;
+          expect(data.residents).to.eql(residents);
+          expect(response.headers["content-type"]).to.equal(
+            "application/json; charset=utf-8"
+          );
+        })
+        .catch(() => {
+          throw new Error("Unable to fetch planet #2 with resident names");
+        });
     });
 
     it("should be able to fetch the first 10 planets", function() {
