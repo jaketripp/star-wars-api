@@ -4,7 +4,7 @@
   "description": "A fun little exercise using a Star Wars API",
   "main": "server.js",
   "scripts": {
-    "test": "node node_modules/.bin/mocha"
+    "test": "node node_modules/.bin/mocha --timeout 20000"
   },
   "author": "Jake Tripp",
   "license": "ISC",
