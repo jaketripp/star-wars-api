@@ -112,8 +112,9 @@ app.listen(port, () => {
 });
 
 // gets passed
-// response.data
-// property by which to sort
+// response.data (object)
+// property by which to sort (string)
+// isReversed (boolean)
 // returns response.data with response.data.results sorted correctly
 function sortByProperty(data, property, isReversed) {
   if (isReversed) {
