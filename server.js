@@ -101,7 +101,7 @@ app.get("/planets", (req, res) => {
   if (reverseOrder) {
     isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
   }
-  
+
   getData("https://swapi.co/api/planets", []).then(planets => {
     let sortedPlanets = sortByProperty(planets, sort, isReversed);
     res.send(sortedPlanets);
@@ -152,24 +152,17 @@ function byProperty(property) {
   };
 }
 
-// recursively get data
-function getData(nextURL, recursionArray, sort, reverseOrder, res) {
+// recursively get data using data.next as the next URL
+function getData(nextURL, recursionArray) {
   return axios
     .get(nextURL)
     .then(({ data }) => {
       recursionArray = recursionArray.concat(data.results);
       if (data.next) {
-        return getData(data.next, recursionArray, sort, reverseOrder, res);
+        return getData(data.next, recursionArray);
       }
-      let finalData = { count: data.count, results: recursionArray };
 
-      // let isReversed;
-      // if (reverseOrder) {
-      //   isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
-      // }
-
-      // res.send(sortByProperty(finalData, sort, isReversed));
-      return finalData;
+      return { count: data.count, results: recursionArray };
     })
     .catch(error => {
       console.log(error);
