@@ -4,6 +4,13 @@ Star Wars REST API
 
 ---
 
+## Installation
+
+ * ```node server.js``` to start the server
+ * ```npm test``` to run the test suite
+
+---
+
 ## Endpoints
  
 ### /people/:id
