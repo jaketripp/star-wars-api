@@ -36,6 +36,18 @@ app.get("/people", (req, res) => {
     });
 });
 
+// all planets
+app.get("/planets-test", (req, res) => {
+  let { sort, reverseOrder } = req.query;
+  getData("https://swapi.co/api/planets", []).then(planets => {
+    let isReversed;
+    if (reverseOrder) {
+      isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
+    }
+    res.send(sortByProperty(planets, sort, isReversed));
+  });
+});
+
 // specific planet
 app.get("/planets/:id", (req, res) => {
   const { id } = req.params;
@@ -138,7 +150,7 @@ function byProperty(property) {
         return 0;
       }
 
-      // height, mass => need to be converted to a Number
+      // height, mass, population, diameter => need to be converted to a Number
     } else {
       if (Number(a[property]) < Number(b[property])) {
         return -1;
@@ -149,4 +161,29 @@ function byProperty(property) {
       }
     }
   };
+}
+
+// recursively get data
+function getData(nextURL, recursionArray, sort, reverseOrder, res) {
+  return axios
+    .get(nextURL)
+    .then(({ data }) => {
+      recursionArray = recursionArray.concat(data.results);
+      if (data.next) {
+        return getData(data.next, recursionArray, sort, reverseOrder, res);
+      }
+      let finalData = { count: data.count, results: recursionArray };
+
+      // let isReversed;
+      // if (reverseOrder) {
+      //   isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
+      // }
+
+      // res.send(sortByProperty(finalData, sort, isReversed));
+      return finalData;
+    })
+    .catch(error => {
+      console.log(error);
+      res.send("ERROR: Unable to fetch data.");
+    });
 }
