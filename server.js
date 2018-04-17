@@ -19,12 +19,26 @@ app.get('/people/:id', (req, res) => {
 });
 
 // all people
-// req.query for sort queries
+// ['name', 'mass', 'height']
 app.get('/people', (req, res) => {
+  let { sort, sortReverse } = req.query;
   axios
     .get(`https://swapi.co/api/people`)
     .then(response => {
-      res.send(response.data);
+      let modifiedResults = response.data.results;
+      switch (sort) {
+        case "name":
+          res.send(sortByProperty(response.data, sort));
+          break;
+        case "mass":
+          res.send(sortByProperty(response.data, sort));
+          break;
+        case "height":
+          res.send(sortByProperty(response.data, sort));
+          break;
+        default:
+          res.send(response.data);
+      }
     })
     .catch(error => {
       console.log(error);
@@ -104,3 +118,40 @@ app.get('/planets', (req, res) => {
 app.listen(port, () => {
   console.log(`Server is up on port ${port}`);
 });
+
+
+
+// gets passed response.data
+// returns response.data with response.data.results sorted correctly
+function sortByProperty(data, property) {
+  data.results = data.results.sort(byProperty(property));
+  return data;
+}
+
+// helper function to sort by property
+function byProperty(property) {
+  return function (a, b) {
+
+    // name
+    if (isNaN(Number(a[property]))) {
+      if (a[property] < b[property]) {
+        return -1;
+      } else if (a[property] > b[property]) {
+        return 1;
+      } else {
+        return 0;
+      }
+
+    // height, mass => needs to be converted to a Number
+    } else {
+      if (Number(a[property]) < Number(b[property])) {
+        return -1;
+      } else if (Number(a[property]) > Number(b[property])) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
+
+  }
+}
