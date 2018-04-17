@@ -35,24 +35,77 @@ describe("api endpoints", function () {
         });
     });
 
-    // ['name', 'mass', 'height']
-    it('should be able to sort the first 10 people by name alphabetically', function () {
-      return axios
-        .get(`${baseUrl}/people/?sort=name`)
-        .then(response => {
-          let { data } = response;
-          var people = data.results.map((person) => {
-            return person.name;
+    describe('sorting', function () {
+
+      // ['name', 'mass', 'height']
+      it('should be able to sort the first 10 people by name alphabetically', function () {
+        return axios
+          .get(`${baseUrl}/people/?sort=name`)
+          .then(response => {
+            let { data } = response;
+            var people = data.results.map((person) => {
+              return person.name;
+            });
+            // ["Beru Whitesun lars", "Biggs Darklighter", "C-3PO", "Darth Vader", "Leia Organa", "Luke Skywalker", "Obi-Wan Kenobi", "Owen Lars", "R2-D2", "R5-D4"]
+            // copy the array, sort it
+            // then compare it to itself
+            var sortedPeople = people.slice(0).sort();
+            expect(sortedPeople).to.eql(people);
+            expect(response.headers['content-type']).to.equal('application/json; charset=utf-8');
+          }).catch(() => {
+            throw new Error("Not sorted by name");
           });
-          // ["Beru Whitesun lars", "Biggs Darklighter", "C-3PO", "Darth Vader", "Leia Organa", "Luke Skywalker", "Obi-Wan Kenobi", "Owen Lars", "R2-D2", "R5-D4"]
-          // copy the array, sort it
-          // then compare it to itself
-          var sortedPeople = people.slice(0).sort();
-          expect(sortedPeople).to.eql(people);
-          expect(response.headers['content-type']).to.equal('application/json; charset=utf-8');
-        }).catch(() => {
-          throw new Error("Not sorted");
-        });
+      });
+
+      it('should be able to sort the first 10 people by mass', function () {
+        return axios
+          .get(`${baseUrl}/people/?sort=mass`)
+          .then(response => {
+            var people = response.data.results.map((person) => {
+              return person.name;
+            });
+            let sortedPeople = ['R2-D2',
+              'R5-D4',
+              'Leia Organa',
+              'C-3PO',
+              'Beru Whitesun lars',
+              'Luke Skywalker',
+              'Obi-Wan Kenobi',
+              'Biggs Darklighter',
+              'Owen Lars',
+              'Darth Vader'
+            ];
+            expect(sortedPeople).to.eql(people);
+            expect(response.headers['content-type']).to.equal('application/json; charset=utf-8');
+          }).catch(() => {
+            throw new Error("Not sorted by mass");
+          });
+      });
+
+      it('should be able to sort the first 10 people by height', function () {
+        return axios
+          .get(`${baseUrl}/people/?sort=height`)
+          .then(response => {
+            var people = response.data.results.map((person) => {
+              return person.name;
+            });
+            let sortedPeople = ['R2-D2',
+              'R5-D4',
+              'Leia Organa',
+              'Beru Whitesun lars',
+              'C-3PO',
+              'Luke Skywalker',
+              'Owen Lars',
+              'Obi-Wan Kenobi',
+              'Biggs Darklighter',
+              'Darth Vader'
+            ];
+            expect(sortedPeople).to.eql(people);
+            expect(response.headers['content-type']).to.equal('application/json; charset=utf-8');
+          }).catch(() => {
+            throw new Error("Not sorted by mass");
+          });
+      });
     });
 
   });
