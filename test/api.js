@@ -56,7 +56,7 @@ describe("api endpoints", function() {
             });
             // ["Beru Whitesun lars", "Biggs Darklighter", "C-3PO", "Darth Vader", "Leia Organa", "Luke Skywalker", "Obi-Wan Kenobi", "Owen Lars", "R2-D2", "R5-D4"]
             // copy the array, sort it
-            // then compare it to itself
+            // then compare it to original
             let sortedPeople = people.slice(0).sort();
             expect(sortedPeople).to.eql(people);
             expect(response.headers["content-type"]).to.equal(
@@ -123,6 +123,25 @@ describe("api endpoints", function() {
           })
           .catch(() => {
             throw new Error("Not sorted by height");
+          });
+      });
+
+      it("should be able to sort the first 10 people by name alphabetically in REVERSE ORDER", function() {
+        return axios
+          .get(`${baseUrl}/people/?sort=name&reverseOrder=true`)
+          .then(response => {
+            let { data } = response;
+            let people = data.results.map(person => {
+              return person.name;
+            });
+            // copy the array, sort it, then reverse
+            // then compare it to original
+            let sortedPeople = people.slice(0).sort().reverse();
+            expect(sortedPeople).to.eql(people);
+            expect(response.headers["content-type"]).to.equal("application/json; charset=utf-8");
+          })
+          .catch(() => {
+            throw new Error("Not sorted by name");
           });
       });
     });
@@ -196,7 +215,7 @@ describe("api endpoints", function() {
             });
             // ['Alderaan', 'Bespin', 'Coruscant', 'Dagobah', 'Endor', 'Geonosis', 'Hoth', 'Kamino', 'Naboo', 'Yavin IV']
             // copy the array, sort it
-            // then compare it to itself
+            // then compare it to original
             let sortedPlanets = planets.slice(0).sort();
             expect(sortedPlanets).to.eql(planets);
             expect(response.headers["content-type"]).to.equal(
@@ -265,6 +284,25 @@ describe("api endpoints", function() {
           })
           .catch(() => {
             throw new Error("Not sorted by diameter");
+          });
+      });
+
+      it("should be able to sort the first 10 planets by name alphabetically in REVERSE ORDER", function() {
+        return axios
+          .get(`${baseUrl}/planets/?sort=name&reverseOrder=true`)
+          .then(response => {
+            let { data } = response;
+            let planets = data.results.map(planet => {
+              return planet.name;
+            });
+            // copy the array, sort it, then reverse
+            // then compare it to original
+            let sortedPlanets = planets.slice(0).sort().reverse();
+            expect(sortedPlanets).to.eql(planets);
+            expect(response.headers["content-type"]).to.equal("application/json; charset=utf-8");
+          })
+          .catch(() => {
+            throw new Error("Not sorted by name in REVERSE ORDER");
           });
       });
     });
