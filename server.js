@@ -19,26 +19,13 @@ app.get('/people/:id', (req, res) => {
 });
 
 // all people
-// ['name', 'mass', 'height']
+// sort by ['name', 'mass', 'height']
 app.get('/people', (req, res) => {
   let { sort, sortReverse } = req.query;
   axios
     .get(`https://swapi.co/api/people`)
-    .then(response => {
-      let modifiedResults = response.data.results;
-      switch (sort) {
-        case "name":
-          res.send(sortByProperty(response.data, sort));
-          break;
-        case "mass":
-          res.send(sortByProperty(response.data, sort));
-          break;
-        case "height":
-          res.send(sortByProperty(response.data, sort));
-          break;
-        default:
-          res.send(response.data);
-      }
+    .then(({ data }) => {
+      res.send(sortByProperty(data, sort));
     })
     .catch(error => {
       console.log(error);
@@ -104,10 +91,11 @@ app.get('/planets/:id/residents', (req, res) => {
 
 // all planets
 app.get('/planets', (req, res) => {
+  let { sort, sortReverse } = req.query;
   axios
     .get(`https://swapi.co/api/planets`)
-    .then(response => {
-      res.send(response.data);
+    .then(({ data }) => {
+      res.send(sortByProperty(data, sort));
     })
     .catch(error => {
       console.log(error);
@@ -121,8 +109,11 @@ app.listen(port, () => {
 
 
 
-// gets passed response.data
+// gets passed 
+  // response.data
+  // property by which to sort
 // returns response.data with response.data.results sorted correctly
+// handle sortReverse here
 function sortByProperty(data, property) {
   data.results = data.results.sort(byProperty(property));
   return data;
