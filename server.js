@@ -167,12 +167,6 @@ app.get("/planets", (req, res) => {
 
 // all planets
 app.get("/planets2", (req, res) => {
-  let { sort, reverseOrder } = req.query;
-  let isReversed;
-  if (reverseOrder) {
-    isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
-  }
-
   getData("https://swapi.co/api/planets", []).then(planets => {
     return Promise.all(
       planets.results.map(function(planet, i) {
@@ -188,16 +182,25 @@ app.get("/planets2", (req, res) => {
       })
     )
       .then(allPlanetResidents => {
+        // get info on how to sort
+        let { sort, reverseOrder } = req.query;
+        let isReversed;
+        if (reverseOrder) {
+          isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
+        }
+
         // allPlanetResidents is an array of arrays of residents
         let planetDataWithResidentNames = replaceResidentURLsWithNames(
           planets,
           allPlanetResidents
         );
+
         let sortedPlanetsWithResidentNames = sortByProperty(
           planetDataWithResidentNames,
           sort,
           isReversed
         );
+
         res.send(sortedPlanetsWithResidentNames);
       })
       .catch(e => {
