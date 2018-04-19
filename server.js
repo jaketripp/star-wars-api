@@ -3,6 +3,7 @@ const axios = require("axios");
 
 const port = process.env.PORT || 3000;
 let app = express();
+let dnscache = require("dns-cache")(10000);
 
 // =========
 // ENDPOINTS
@@ -25,7 +26,7 @@ app.get("/people/:id", (req, res) => {
 // all people
 app.get("/people", (req, res) => {
   let { sort, isReversed } = getSortInfo(req.query);
-  
+
   axios
     .get(`https://swapi.co/api/people`)
     .then(({ data }) => {
