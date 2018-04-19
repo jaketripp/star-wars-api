@@ -165,6 +165,46 @@ app.get("/planets", (req, res) => {
   });
 });
 
+// all planets
+app.get("/planets2", (req, res) => {
+  let { sort, reverseOrder } = req.query;
+  let isReversed;
+  if (reverseOrder) {
+    isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
+  }
+
+  getData("https://swapi.co/api/planets", []).then(planets => {
+    let planetsWithResidentNames = planets;
+
+    return Promise.all(
+      planets.results.map(function(planet, i) {
+        return Promise.all(
+          planet.residents.map(function(residentURL) {
+            return axios.get(residentURL);
+          })
+        ).then(planetResidents => {
+          planetsWithResidentNames.results[i].residents = planetResidents.map(
+            resident => {
+              return resident.data.name;
+            }
+          );
+        });
+      })
+    )
+      .then(data => {
+        let sortedPlanetsWithResidentNames = sortByProperty(
+          planetsWithResidentNames,
+          sort,
+          isReversed
+        );
+        res.send(sortedPlanetsWithResidentNames);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server is up on port ${port}`);
 });
