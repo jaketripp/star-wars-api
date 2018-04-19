@@ -62,35 +62,19 @@ app.get("/planets/:id", (req, res) => {
 // specific planet residents (optional endpoint)
 app.get("/planets/:id/residents", (req, res) => {
   const { id } = req.params;
-
-  // get all data
   axios
     .get(`https://swapi.co/api/planets/${id}`)
-    .then(({ data }) => {
-      let dataWithResidentNames = data;
-      let promises = [];
+    .then(({ data: planet }) => {
+      let promises = planet.residents.map(residentURL => {
+        return axios.get(residentURL);
+      });
 
-      // loop through residents and populate promises array
-      for (let i = 0; i < data.residents.length; i++) {
-        let residentURL = data.residents[i];
-        promises.push(axios.get(residentURL));
-      }
-
-      axios.all(promises).then(
-        axios.spread(function() {
-          // All requests are now complete
-
-          // convert arguments to an actual array
-          const args = Array.from(arguments);
-
-          let residentNames = args.map(resident => {
-            return resident.data.name;
-          });
-
-          dataWithResidentNames.residents = residentNames;
-          res.send(dataWithResidentNames);
-        })
-      );
+      Promise.all(promises).then(response => {
+        planet.residents = response.map(residentObj => {
+          return residentObj.data.name;
+        });
+        res.send(planet);
+      });
     })
     .catch(error => {
       console.log(error);
