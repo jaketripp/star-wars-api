@@ -103,8 +103,60 @@ app.get("/planets", (req, res) => {
   }
 
   getData("https://swapi.co/api/planets", []).then(planets => {
-    let sortedPlanets = sortByProperty(planets, sort, isReversed);
-    res.send(sortedPlanets);
+    // let sortedPlanets = sortByProperty(planets, sort, isReversed);
+    // res.send(sortedPlanets);
+    let planetDataWithResidentNames = planets;
+    let count = planets.results.length;
+    let answer = new Promise((resolve, reject) => {
+      for (let k = 0; k < planetDataWithResidentNames.results.length; k++) {
+        let promises = [];
+
+        // loop through residents and populate promises array
+        for (let i = 0; i < planetDataWithResidentNames.results[k].residents.length; i++) {
+          let residentURL = planetDataWithResidentNames.results[k].residents[i];
+          promises.push(axios.get(residentURL));
+        }
+
+        axios
+          .all(promises)
+          .then(
+            axios.spread(function() {
+              // All requests are now complete
+              // convert arguments to an actual array
+              const args = Array.from(arguments);
+
+              let residentNames = args.map(resident => {
+                return resident.data.name;
+              });
+
+              // console.log("=============================");
+              // console.log(planets.results[k].name);
+              // console.log(residentNames);
+              // console.log("=============================");
+              setTimeout(() => {
+                count--;
+                planetDataWithResidentNames.results[k].residents = residentNames;
+                
+                if (count === 0) {
+                  resolve(planetDataWithResidentNames);
+                }
+              }, 1);
+            })
+          )
+          .catch(e => {
+            console.log(e);
+          });
+        
+      }
+    });
+
+    answer
+      .then(data => {
+        res.send(data);
+      })
+      .catch(e => {
+        console.log(e);
+      });
   });
 });
 
