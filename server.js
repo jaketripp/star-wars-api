@@ -103,8 +103,6 @@ app.get("/planets", (req, res) => {
   }
 
   getData("https://swapi.co/api/planets", []).then(planets => {
-    // let sortedPlanets = sortByProperty(planets, sort, isReversed);
-    // res.send(sortedPlanets);
     let planetDataWithResidentNames = planets;
     let count = planets.results.length;
     let answer = new Promise((resolve, reject) => {
@@ -112,7 +110,11 @@ app.get("/planets", (req, res) => {
         let promises = [];
 
         // loop through residents and populate promises array
-        for (let i = 0; i < planetDataWithResidentNames.results[k].residents.length; i++) {
+        for (
+          let i = 0;
+          i < planetDataWithResidentNames.results[k].residents.length;
+          i++
+        ) {
           let residentURL = planetDataWithResidentNames.results[k].residents[i];
           promises.push(axios.get(residentURL));
         }
@@ -135,8 +137,10 @@ app.get("/planets", (req, res) => {
               // console.log("=============================");
               setTimeout(() => {
                 count--;
-                planetDataWithResidentNames.results[k].residents = residentNames;
-                
+                planetDataWithResidentNames.results[
+                  k
+                ].residents = residentNames;
+
                 if (count === 0) {
                   resolve(planetDataWithResidentNames);
                 }
@@ -146,13 +150,14 @@ app.get("/planets", (req, res) => {
           .catch(e => {
             console.log(e);
           });
-        
       }
     });
 
     answer
-      .then(data => {
-        res.send(data);
+      .then(planets => {
+        let sortedPlanets = sortByProperty(planets, sort, isReversed);
+        res.send(sortedPlanets);
+        // res.send(planets);
       })
       .catch(e => {
         console.log(e);
