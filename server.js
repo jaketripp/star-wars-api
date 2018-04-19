@@ -79,7 +79,7 @@ app.get("/planets/:id/residents", (req, res) => {
 });
 
 // all planets
-app.get("/planets2", (req, res) => {
+app.get("/planets", (req, res) => {
   let { sort, isReversed } = getSortInfo(req.query);
 
   getData("https://swapi.co/api/planets", []).then(planets => {
