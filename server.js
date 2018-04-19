@@ -24,16 +24,11 @@ app.get("/people/:id", (req, res) => {
 
 // all people
 app.get("/people", (req, res) => {
-  let { sort, reverseOrder } = req.query;
+  let { sort, isReversed } = getSortInfo(req.query);
+  
   axios
     .get(`https://swapi.co/api/people`)
     .then(({ data }) => {
-      let { sort, reverseOrder } = req.query;
-      let isReversed;
-      if (reverseOrder) {
-        isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
-      }
-
       getData("https://swapi.co/api/people", []).then(people => {
         let sortedPeople = sortByProperty(people, sort, isReversed);
         res.send(sortedPeople);
@@ -59,7 +54,7 @@ app.get("/planets/:id", (req, res) => {
     });
 });
 
-// specific planet residents (optional endpoint)
+// specific planet with resident names (optional endpoint)
 app.get("/planets/:id/residents", (req, res) => {
   const { id } = req.params;
   axios
