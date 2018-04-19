@@ -4,6 +4,10 @@ const axios = require("axios");
 const port = process.env.PORT || 3000;
 let app = express();
 
+// =========
+// ENDPOINTS
+// =========
+
 // specific person
 app.get("/people/:id", (req, res) => {
   const { id } = req.params;
@@ -95,6 +99,7 @@ app.get("/planets/:id/residents", (req, res) => {
 });
 
 // all planets
+// gnarly first take
 app.get("/planets", (req, res) => {
   let { sort, reverseOrder } = req.query;
   let isReversed;
@@ -166,33 +171,18 @@ app.get("/planets", (req, res) => {
 });
 
 // all planets
+// best approach
 app.get("/planets2", (req, res) => {
-  getData("https://swapi.co/api/planets", []).then(planets => {
-    return Promise.all(
-      planets.results.map(function(planet, i) {
-        return Promise.all(
-          planet.residents.map(function(residentURL) {
-            return axios.get(residentURL);
-          })
-        ).then(planetResidents => {
-          return planetResidents.map(resident => {
-            return resident.data.name;
-          });
-        });
-      })
-    )
-      .then(allPlanetResidents => {
-        // get info on how to sort
-        let { sort, reverseOrder } = req.query;
-        let isReversed;
-        if (reverseOrder) {
-          isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
-        }
+  let { sort, isReversed } = getSortInfo(req.query);
 
-        // allPlanetResidents is an array of arrays of residents
+  getData("https://swapi.co/api/planets", []).then(planets => {
+    let nestedResidentsArrayPromise = getNestedResidentsArray(planets);
+
+    nestedResidentsArrayPromise
+      .then(nestedResidentsArray => {
         let planetDataWithResidentNames = replaceResidentURLsWithNames(
           planets,
-          allPlanetResidents
+          nestedResidentsArray
         );
 
         let sortedPlanetsWithResidentNames = sortByProperty(
@@ -209,15 +199,66 @@ app.get("/planets2", (req, res) => {
   });
 });
 
+// async/await implementation
+app.get("/planets3", async (req, res) => {
+  let { sort, isReversed } = getSortInfo(req.query);
+
+  const planets = await getData("https://swapi.co/api/planets", []);
+
+  const planetResults = planets.results.map(async (planet, index) => {
+    const residentURLs = planet.residents.map(async residentURL => {
+      return axios.get(residentURL);
+    });
+
+    return Promise.all(residentURLs)
+      .then(planetResidents => {
+        return planetResidents.map(resident => {
+          return resident.data.name;
+        });
+      })
+      .catch(e => {
+        throw e;
+      });
+  });
+
+  Promise.all(planetResults)
+    .then(allPlanetResidents => {
+      // allPlanetResidents is an array of arrays of residents
+      let planetDataWithResidentNames = replaceResidentURLsWithNames(
+        planets,
+        allPlanetResidents
+      );
+
+      let sortedPlanetsWithResidentNames = sortByProperty(
+        planetDataWithResidentNames,
+        sort,
+        isReversed
+      );
+
+      res.send(sortedPlanetsWithResidentNames);
+    })
+    .catch(e => {
+      throw e;
+    });
+});
+
 app.listen(port, () => {
   console.log(`Server is up on port ${port}`);
 });
 
-// gets passed
-// response.data (object)
-// property by which to sort (string)
-// isReversed (boolean)
-// returns response.data with response.data.results sorted correctly
+// =========
+// FUNCTIONS
+// =========
+
+/* 
+  gets passed
+    response.data (object)
+    property by which to sort (string)
+    isReversed (boolean)
+  returns 
+    response.data with response.data.results sorted correctly 
+*/
+
 function sortByProperty(data, property, isReversed) {
   if (isReversed) {
     data.results = data.results.sort(byProperty(property)).reverse();
@@ -240,7 +281,7 @@ function byProperty(property) {
         return 0;
       }
 
-      // height, mass, population, diameter => need to be converted to a Number
+      // height, mass, population, diameter => need to be converted from string to a Number
     } else {
       if (Number(a[property]) < Number(b[property])) {
         return -1;
@@ -271,10 +312,33 @@ function getData(nextURL, recursionArray) {
     });
 }
 
-// takes entire data and array of arrays of resident names and replaces resident urls with names
 function replaceResidentURLsWithNames(planetsData, allPlanetResidents) {
   allPlanetResidents.forEach((planetResidents, i) => {
     planetsData.results[i].residents = planetResidents;
   });
   return planetsData;
+}
+
+function getNestedResidentsArray(planets) {
+  return Promise.all(
+    planets.results.map(function(planet, i) {
+      return Promise.all(
+        planet.residents.map(function(residentURL) {
+          return axios.get(residentURL);
+        })
+      ).then(planetResidents => {
+        return planetResidents.map(resident => {
+          return resident.data.name;
+        });
+      });
+    })
+  );
+}
+
+function getSortInfo({ sort, reverseOrder }) {
+  let isReversed;
+  if (reverseOrder) {
+    isReversed = reverseOrder.toLowerCase() === "true" ? true : false;
+  }
+  return { sort, isReversed };
 }
