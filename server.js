@@ -174,8 +174,6 @@ app.get("/planets2", (req, res) => {
   }
 
   getData("https://swapi.co/api/planets", []).then(planets => {
-    let planetsWithResidentNames = planets;
-
     return Promise.all(
       planets.results.map(function(planet, i) {
         return Promise.all(
@@ -183,17 +181,20 @@ app.get("/planets2", (req, res) => {
             return axios.get(residentURL);
           })
         ).then(planetResidents => {
-          planetsWithResidentNames.results[i].residents = planetResidents.map(
-            resident => {
-              return resident.data.name;
-            }
-          );
+          return planetResidents.map(resident => {
+            return resident.data.name;
+          });
         });
       })
     )
-      .then(data => {
+      .then(allPlanetResidents => {
+        // allPlanetResidents is an array of arrays of residents
+        let planetDataWithResidentNames = replaceResidentURLsWithNames(
+          planets,
+          allPlanetResidents
+        );
         let sortedPlanetsWithResidentNames = sortByProperty(
-          planetsWithResidentNames,
+          planetDataWithResidentNames,
           sort,
           isReversed
         );
@@ -265,4 +266,12 @@ function getData(nextURL, recursionArray) {
       console.log(error);
       res.send("ERROR: Unable to fetch data.");
     });
+}
+
+// takes entire data and array of arrays of resident names and replaces resident urls with names
+function replaceResidentURLsWithNames(planetsData, allPlanetResidents) {
+  allPlanetResidents.forEach((planetResidents, i) => {
+    planetsData.results[i].residents = planetResidents;
+  });
+  return planetsData;
 }
