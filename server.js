@@ -136,7 +136,7 @@ function sortByProperty(data, property, isReversed) {
 function byProperty(property) {
   return function(a, b) {
     // name
-    if (isNaN(Number(a[property]))) {
+    if (isNaN(Number(a[property])) || isNaN(Number(b[property]))) {
       if (a[property] < b[property]) {
         return -1;
       } else if (a[property] > b[property]) {
