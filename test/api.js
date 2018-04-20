@@ -74,8 +74,7 @@ describe("api endpoints", function() {
             let people = response.data.results.map(person => {
               return person.name;
             }).slice(0,10);
-
-            let sortedPeople = ["Padmé Amidala", "Jabba Desilijic Tiure", "Sly Moore", "Leia Organa", "Wat Tambor", "Ratts Tyerell", "R5-D4", "R2-D2", "Adi Gallia", "Dud Bolt"];
+            let sortedPeople = ["Ratts Tyerell", "Yoda", "Wicket Systri Warrick", "R2-D2", "R5-D4", "Sebulba", "Dud Bolt", "Padmé Amidala", "Wat Tambor", "Sly Moore"];
 
             expect(sortedPeople).to.eql(people);
             expect(response.headers["content-type"]).to.equal("application/json; charset=utf-8");
