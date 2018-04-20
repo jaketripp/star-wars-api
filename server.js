@@ -135,6 +135,22 @@ function sortByProperty(data, property, isReversed) {
 // helper function to sort by property
 function byProperty(property) {
   return function(a, b) {
+    // weird exception JUST FOR Jabba the Hutt's mass, which is a stringified number WITH A COMMA
+    // arguably an error with SWAPI 
+      // - no other stringified number has a comma in it (planet mass, diameter, population, or orbital_period)
+    if (property === 'mass') {
+      if (a[property].includes(',')) {
+        a[property] = a[property].replace(',', '');
+        console.log(a['name']);
+        console.log(a[property]);
+      }
+      if (b[property].includes(',')) {
+        b[property] = b[property].replace(",", "");
+        console.log(b['name']);
+        console.log(b[property]);
+      }
+    }
+
     // name
     if (isNaN(Number(a[property])) || isNaN(Number(b[property]))) {
       if (a[property] < b[property]) {
