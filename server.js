@@ -141,13 +141,9 @@ function byProperty(property) {
     if (property === 'mass') {
       if (a[property].includes(',')) {
         a[property] = a[property].replace(',', '');
-        console.log(a['name']);
-        console.log(a[property]);
       }
       if (b[property].includes(',')) {
         b[property] = b[property].replace(",", "");
-        console.log(b['name']);
-        console.log(b[property]);
       }
     }
 
