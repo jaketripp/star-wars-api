@@ -106,6 +106,45 @@ app.get("/planets", (req, res) => {
   });
 });
 
+// all planets
+// more optimized approach - about 1/6 the # of requests
+// build an obj with:
+// keys = planet urls
+// values = arrays of resident names
+
+// replace planet.residents with resident arrays if found, or empty arrays if not
+app.get("/planets2", async (req, res) => {
+  let { sort, isReversed } = getSortInfo(req.query);
+
+  const planets = await getData("https://swapi.co/api/planets", []);
+  const people = await getData("https://swapi.co/api/people", []);
+
+  const planetResidentObj = {};
+
+  people.results.forEach(person => {
+    if (!planetResidentObj[person.homeworld]) {
+      planetResidentObj[person.homeworld] = [];
+    }
+    planetResidentObj[person.homeworld].push(person.name);
+  });
+
+  planets.results.forEach(planet => {
+    if (planetResidentObj[planet.url]) {
+      planet.residents = planetResidentObj[planet.url];
+    } else {
+      planet.residents = [];
+    }
+  });
+
+  let sortedPlanetsWithResidentNames = sortByProperty(
+    planets,
+    sort,
+    isReversed
+  );
+
+  res.send(sortedPlanetsWithResidentNames);
+});
+
 app.listen(port, () => {
   console.log(`Server is up on port ${port}`);
 });
